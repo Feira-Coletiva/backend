@@ -1,8 +1,8 @@
 package br.edu.ifsc.sistemafeiracoletiva.controller;
 
-import br.edu.ifsc.sistemafeiracoletiva.dto.ClienteInputDTO;
-import br.edu.ifsc.sistemafeiracoletiva.dto.ClienteOutputDTO;
-import br.edu.ifsc.sistemafeiracoletiva.service.ClienteService;
+import br.edu.ifsc.sistemafeiracoletiva.dto.CategoriaInputDTO;
+import br.edu.ifsc.sistemafeiracoletiva.dto.CategoriaOutputDTO;
+import br.edu.ifsc.sistemafeiracoletiva.service.CategoriaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class CategoriaController {
 
     @Autowired
-    private ClienteService service;
+    private CategoriaService service;
 
     /**
      * Retorna todos os categoria cadastradas.
@@ -32,57 +32,57 @@ public class CategoriaController {
     }
 
     /**
-     * Retorna um cliente por ID.
-     * @param id identificador do cliente
-     * @return cliente encontrado ou 404
+     * Retorna um categoria por ID.
+     * @param id identificador do categoria
+     * @return categoria encontrado ou 404
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteOutputDTO> buscarPorId(@PathVariable int id) {
-        Optional<ClienteOutputDTO> cliente = service.buscarPorId(id);
-        return cliente.map(ResponseEntity::ok)
+    public ResponseEntity<CategoriaOutputDTO> buscarPorId(@PathVariable int id) {
+        Optional<CategoriaOutputDTO> categoria = service.buscarPorId(id);
+        return categoria.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Cadastra um novo cliente.
+     * Cadastra um novo categoria.
      * @param dto objeto recebido no corpo da requisição
-     * @return cliente salvo
+     * @return categoria salvo
      */
     @PostMapping
-    public ResponseEntity<ClienteOutputDTO> criar(@RequestBody @Valid ClienteInputDTO dto) {
-        ClienteOutputDTO salvo = service.salvar(dto, null);
+    public ResponseEntity<CategoriaOutputDTO> criar(@RequestBody @Valid CategoriaInputDTO dto) {
+        CategoriaOutputDTO salvo = service.salvar(dto, null);
         return ResponseEntity.ok(salvo);
     }
 
     /**
-     * Cadastra vários clientes de uma vez.
+     * Cadastra vários categorias de uma vez.
      * @param dtos lista de objetos a serem cadastrados
-     * @return lista de clientes salvos
+     * @return lista de categorias salvos
      */
     @PostMapping("/lote")
-    public ResponseEntity<List<ClienteOutputDTO>> criarLote(@RequestBody List<@Valid ClienteInputDTO> dtos) {
-        List<ClienteOutputDTO> salvos = service.salvarTodos(dtos);
+    public ResponseEntity<List<CategoriaOutputDTO>> criarLote(@RequestBody List<@Valid CategoriaInputDTO> dtos) {
+        List<CategoriaOutputDTO> salvos = service.salvarTodos(dtos);
         return ResponseEntity.ok(salvos);
     }
 
     /**
-     * Atualiza os dados de um cliente existente.
-     * @param id identificador do cliente
+     * Atualiza os dados de um categoria existente.
+     * @param id identificador do categoria
      * @param dto dados atualizados
-     * @return cliente atualizado ou 404
+     * @return categoria atualizado ou 404
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteOutputDTO> atualizar(@PathVariable int id, @RequestBody @Valid ClienteInputDTO dto) {
+    public ResponseEntity<CategoriaOutputDTO> atualizar(@PathVariable int id, @RequestBody @Valid CategoriaInputDTO dto) {
         if (!service.existePorId(id)) {
             return ResponseEntity.notFound().build();
         }
-        ClienteOutputDTO atualizado = service.salvar(dto, id);
+        CategoriaOutputDTO atualizado = service.salvar(dto, id);
         return ResponseEntity.ok(atualizado);
     }
 
     /**
-     * Remove um cliente do sistema.
-     * @param id identificador do cliente
+     * Remove um categoria do sistema.
+     * @param id identificador do categoria
      * @return status HTTP apropriado
      */
     @DeleteMapping("/{id}")

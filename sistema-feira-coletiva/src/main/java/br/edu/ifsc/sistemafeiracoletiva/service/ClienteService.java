@@ -100,9 +100,3 @@ public class ClienteService {
     }
 }
 
-//
-
-//    private ClienteDTO converterParaDTO(Cliente cliente) {
-//        return new ClienteDTO(cliente.getId(), cliente.getNome(), cliente.getEmail(), cliente.getTelefone());
-//    }
-//}
