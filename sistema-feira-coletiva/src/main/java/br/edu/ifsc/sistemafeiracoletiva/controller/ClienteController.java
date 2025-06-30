@@ -60,7 +60,7 @@ public class ClienteController {
      * @return lista de clientes salvos
      */
     @PostMapping("/lote")
-    public ResponseEntity<List<ClienteOutputDTO>> criarLote(@RequestBody List<@Valid ClienteInputDTO> dtos) {
+    public ResponseEntity<List<ClienteOutputDTO>> criarLote(@RequestBody List<ClienteInputDTO> dtos) {
         List<ClienteOutputDTO> salvos = service.salvarTodos(dtos);
         return ResponseEntity.ok(salvos);
     }

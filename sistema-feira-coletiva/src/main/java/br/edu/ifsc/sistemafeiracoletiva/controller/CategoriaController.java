@@ -59,8 +59,8 @@ public class CategoriaController {
      * @param dtos lista de objetos a serem cadastrados
      * @return lista de categorias salvos
      */
-    @PostMapping("/lote")
-    public ResponseEntity<List<CategoriaOutputDTO>> criarLote(@RequestBody List<@Valid CategoriaInputDTO> dtos) {
+    @PostMapping("/lote")                                      // @Valid Verificar validação para cadastros multiplos
+    public ResponseEntity<List<CategoriaOutputDTO>> criarLote(@RequestBody List<CategoriaInputDTO> dtos) {
         List<CategoriaOutputDTO> salvos = service.salvarTodos(dtos);
         return ResponseEntity.ok(salvos);
     }

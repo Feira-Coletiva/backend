@@ -26,13 +26,16 @@ public class Cliente {
     @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres")
     private String nome;
 
+    @Column(name = "email")
     @NotBlank(message = "O e-mail é obrigatório")
     @Email(message = "E-mail inválido")
     private String email;
 
+    @Column(name = "telefone")
     @NotBlank(message = "O telefone é obrigatório")
     private String telefone;
 
+    @Column(name = "senha")
     @JsonIgnore // Segurança no retorno do json, para que as senhas não fiquem visiveis
     @NotBlank(message = "A senha é obrigatória")
     private String senha;
