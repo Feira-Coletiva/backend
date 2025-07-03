@@ -2,6 +2,7 @@ package br.edu.ifsc.sistemafeiracoletiva.controller;
 
 import br.edu.ifsc.sistemafeiracoletiva.dto.VendedorInputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.dto.VendedorOutputDTO;
+import br.edu.ifsc.sistemafeiracoletiva.dto.VendedorSuasOfertasOutputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.service.VendedorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +33,35 @@ public class VendedorController {
     }
 
     /**
+     * Retorna todos os vendedores cadastrados e suas ofertas.
+     * @return lista de VendedorOutputDTO
+     */
+    @GetMapping("/ofertas")
+    public List<VendedorSuasOfertasOutputDTO> listarVendedoresOfertas() {
+        return service.listarVendedoresOfertas();
+    }
+
+    /**
      * Retorna um vendedor por ID.
      * @param id identificador do vendedor
      * @return vendedor encontrado ou 404
      */
     @GetMapping("/{id}")
     public ResponseEntity<VendedorOutputDTO> buscarPorId(@PathVariable int id) {
-        Optional<VendedorOutputDTO> cliente = service.buscarPorId(id);
-        return cliente.map(ResponseEntity::ok)
+        Optional<VendedorOutputDTO> vendedor = service.buscarPorId(id);
+        return vendedor.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Retorna um vendedor por ID.
+     * @param id identificador do vendedor e suas ofertas
+     * @return vendedor encontrado ou 404
+     */
+    @GetMapping("ofertas/{id}")
+    public ResponseEntity<VendedorSuasOfertasOutputDTO> buscarPorIdVendedoresOfertas(@PathVariable int id) {
+        Optional<VendedorSuasOfertasOutputDTO> vendedor = service.buscarPorIdVendedoresOfertas(id);
+        return vendedor.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 

@@ -1,14 +1,18 @@
 package br.edu.ifsc.sistemafeiracoletiva.dto;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
+import br.edu.ifsc.sistemafeiracoletiva.model.domain.Oferta;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * DTO usado para entrada de dados (POST e PUT).
- * O cliente envia apenas esses campos no JSON da requisição.
+ * O vendedor envia apenas esses campos no JSON da requisição.
  */
 @Data
 public class VendedorInputDTO {

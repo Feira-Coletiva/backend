@@ -1,7 +1,9 @@
 package br.edu.ifsc.sistemafeiracoletiva.service;
 
+import br.edu.ifsc.sistemafeiracoletiva.dto.ResumoOfertasVendedorDTO;
 import br.edu.ifsc.sistemafeiracoletiva.dto.VendedorInputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.dto.VendedorOutputDTO;
+import br.edu.ifsc.sistemafeiracoletiva.dto.VendedorSuasOfertasOutputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Vendedor;
 import br.edu.ifsc.sistemafeiracoletiva.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +34,37 @@ public class VendedorService {
     }
 
     /**
+     * Lista todos os vendedores e suas ofertas, convertendo as entidades para DTOs antes de devolver.
+     */
+    public List<VendedorSuasOfertasOutputDTO> listarVendedoresOfertas() {
+        return repository.findAll()
+                .stream()
+                .map(this::toOutputMoreOfertasDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Busca um vendedor por ID e devolve um Optional<VendedorOutputDTO>.
      */
     public Optional<VendedorOutputDTO> buscarPorId(int id) {
         return repository.findById(id)
                 .map(this::toOutputDTO);
+    }
+
+    /**
+     * Busca um vendedor por ID e devolve um Optional<VendedorSuasOfertasOutputDTO>.
+     */
+    public Optional<VendedorSuasOfertasOutputDTO> buscarPorIdVendedoresOfertas(int id) {
+        return repository.findById(id)
+                .map(this::toOutputMoreOfertasDTO);
+    }
+
+    /**
+     * Busca um vendedor por ID e devolve um entidade de vendedor.
+     */
+    public Vendedor buscarEntidadePorId(int id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vendedor não encontrado"));
     }
 
     /**
@@ -85,6 +113,16 @@ public class VendedorService {
      */
     private VendedorOutputDTO toOutputDTO(Vendedor v) {
         return new VendedorOutputDTO(v.getId(), v.getNome(), v.getTelefone(), v.getRegDeAtuacao(), v.getChavePix());
+    }
+
+    /**
+     * Converte uma entidade Vendedor para DTO de saída com orfetas.
+     */
+    private VendedorSuasOfertasOutputDTO toOutputMoreOfertasDTO(Vendedor v) {
+        List<ResumoOfertasVendedorDTO> os = v.getOfertas().stream()
+                .map(o -> new ResumoOfertasVendedorDTO(o.getId(), o.getTitulo(), o.getDispStatus()))
+                .collect(Collectors.toList());
+        return new VendedorSuasOfertasOutputDTO(v.getId(), v.getNome(), os);
     }
 
     /**
