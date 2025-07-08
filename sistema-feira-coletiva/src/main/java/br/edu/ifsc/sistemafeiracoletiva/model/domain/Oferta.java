@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Entidade JPA que representa a tabela "ofertas" no banco de dados.
  */
@@ -38,4 +41,8 @@ public class Oferta {
     @JoinColumn(name="id_vendedor") // Define o nome da coluna de chave estrangeira no banco de dados que liga a Oferta ao Vendedor.
     @JsonIgnoreProperties("ofertas")
     private Vendedor vendedor;
+
+    @OneToMany(mappedBy = "oferta", cascade = CascadeType.ALL, orphanRemoval = true)    // CascadeType.ALL: persistir/remover produtos automaticamente junto com a oferta.
+    @JsonIgnoreProperties("oferta")                                                     // orphanRemoval = true: produtos removidos da lista também são removidos do banco.
+    private List<Produto> produtos = new ArrayList<>();
 }

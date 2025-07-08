@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +74,8 @@ public class VendedorController {
     @PostMapping
     public ResponseEntity<VendedorOutputDTO> criar(@RequestBody @Valid VendedorInputDTO dto) {
         VendedorOutputDTO salvo = service.salvar(dto, null);
-        return ResponseEntity.ok(salvo);
+        URI location = URI.create("/api/vendedores/" + salvo.getId());
+        return ResponseEntity.created(location).body(salvo);
     }
 
     /**

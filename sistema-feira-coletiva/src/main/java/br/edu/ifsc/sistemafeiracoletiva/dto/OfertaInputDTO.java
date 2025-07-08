@@ -1,6 +1,7 @@
 package br.edu.ifsc.sistemafeiracoletiva.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -19,6 +20,6 @@ public class OfertaInputDTO {
     @Size(min = 10, max = 250, message = "A descrição deve ter entre 10 e 250 caracteres")
     private String descricao;
 
-    @NotBlank(message = "ID de vendedor é obrigatório")
+    @NotNull(message = "ID de vendedor é obrigatório")
     private Integer idVendedor;
 }

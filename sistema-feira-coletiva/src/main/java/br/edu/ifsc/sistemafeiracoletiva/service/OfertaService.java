@@ -46,6 +46,14 @@ public class OfertaService {
     }
 
     /**
+     * Busca uma oferta por ID e devolve um entidade de oferta.
+     */
+    public Oferta buscarEntidadePorId(int id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Oferta não encontrado"));
+    }
+
+    /**
      * Salva um nova oferta ou atualiza um oferta existente.
      * Retorna o DTO da entidade salva.
      */

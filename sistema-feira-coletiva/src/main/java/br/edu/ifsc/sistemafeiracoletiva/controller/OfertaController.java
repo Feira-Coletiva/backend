@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +52,8 @@ public class OfertaController {
     @PostMapping
     public ResponseEntity<OfertaOutputDTO> criar(@RequestBody @Valid OfertaInputDTO dto) {
         OfertaOutputDTO salvo = service.salvar(dto, null);
-        return ResponseEntity.ok(salvo);
+        URI location = URI.create("/api/ofertas/" + salvo.getId());
+        return ResponseEntity.created(location).body(salvo);
     }
 
     /**
