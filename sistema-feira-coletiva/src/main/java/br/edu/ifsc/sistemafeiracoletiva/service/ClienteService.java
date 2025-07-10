@@ -5,6 +5,7 @@ import br.edu.ifsc.sistemafeiracoletiva.dto.ClienteOutputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Cliente;
 import br.edu.ifsc.sistemafeiracoletiva.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,10 @@ public class ClienteService {
 
     @Autowired  // Injeta automaticamente uma instância de ClienteRepository
     private ClienteRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // injeta o BCrypt configurado no SecurityConfig
+
 
     /**
      * Lista todos os clientes, convertendo as entidades para DTOs antes de devolver.
@@ -40,6 +45,14 @@ public class ClienteService {
     }
 
     /**
+     * Busca um cliente por ID e devolve uma entidade Cliente.
+     */
+    public Cliente buscarClientePorEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
+    }
+
+    /**
      * Salva um novo cliente ou atualiza um cliente existente.
      * Retorna o DTO da entidade salva.
      */
@@ -48,6 +61,10 @@ public class ClienteService {
         if (id != null) {
             cliente.setId(id); // Atualização
         }
+        // Criptografa a senha ANTES de salvar
+        String senhaCriptografada = passwordEncoder.encode(cliente.getSenha());
+        cliente.setSenha(senhaCriptografada);
+
         Cliente salvo = repository.save(cliente);
         return toOutputDTO(salvo);
     }
