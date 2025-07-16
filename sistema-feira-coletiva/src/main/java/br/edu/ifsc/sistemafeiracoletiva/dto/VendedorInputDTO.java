@@ -3,6 +3,7 @@ package br.edu.ifsc.sistemafeiracoletiva.dto;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Oferta;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -21,6 +22,10 @@ public class VendedorInputDTO {
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     private String nome;
 
+    @NotBlank(message = "Email é obrigatório")
+    @Email(message = "Email inválido")
+    private String email;
+
     @NotBlank(message = "Telefone é obrigatório")
     private String telefone;
 
@@ -32,9 +37,6 @@ public class VendedorInputDTO {
 
     @NotBlank(message = "O CEP é obrigatório")
     private String cep;
-
-    @NotBlank(message = "A região de atuação é obrigatória")
-    private String regDeAtuacao;
 
     @NotBlank(message = "A chave pix é obrigatória")
     private String chavePix;

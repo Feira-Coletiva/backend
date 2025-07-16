@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDate;
 
 /**
  * DTO usado para saída de dados (GET, POST response).
@@ -13,11 +13,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OfertaOutputDTO {
+public class PublicacaoOutputDTO {
     private Integer id;
-    private String titulo;
-    private String descricao;
-    private Integer qtdEstoqueTotal;
-    private Boolean statusDisponibilidade;
-    private ResumoVendedorOfertaDTO vendedor;
+    private LocalDate dtFinalExposicao;
+    private LocalDate dtFinalPagamento;
+    private String etapa;
+    private LocalDeRetiradaOutputDTO localDeRetirada;
 }

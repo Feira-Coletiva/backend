@@ -35,7 +35,7 @@ public class VendedorController {
 
     /**
      * Retorna todos os vendedores cadastrados e suas ofertas.
-     * @return lista de VendedorOutputDTO
+     * @return lista de VendedorSuasOfertasOutputDTO
      */
     @GetMapping("/ofertas")
     public List<VendedorSuasOfertasOutputDTO> listarVendedoresOfertas() {

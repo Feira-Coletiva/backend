@@ -1,17 +1,17 @@
 spring.application.name=sistema-feira-coletiva
 
-# URL de conex„o com banco MySQL
-spring.datasource.url=jdbc:mysql://localhost:3306/sistema_feira_coletiva_v2?useSSL=false&serverTimezone=UTC
+# URL de conex√£o com banco MySQL
+spring.datasource.url=jdbc:mysql://localhost:3306/sistema_feira_coletiva?useSSL=false&serverTimezone=UTC
 
 # Credenciais do MySQL
-spring.datasource.username=Hatran
-spring.datasource.password=*Luneta*
+spring.datasource.username=SEU_USUARIO
+spring.datasource.password=SUA_SENHA
 
-# ConfiguraÁıes do JPA/Hibernate
+# Configura√ß√µes do JPA/Hibernate
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
-#Chave de sess„o
+#Chave de sess√£o
 jwt.secret=chave_super_secreta_com_mais_de_32_caracteres
 jwt.expiration=86400000

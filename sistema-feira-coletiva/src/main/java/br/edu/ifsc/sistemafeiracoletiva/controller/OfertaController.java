@@ -1,7 +1,6 @@
 package br.edu.ifsc.sistemafeiracoletiva.controller;
 
-import br.edu.ifsc.sistemafeiracoletiva.dto.OfertaInputDTO;
-import br.edu.ifsc.sistemafeiracoletiva.dto.OfertaOutputDTO;
+import br.edu.ifsc.sistemafeiracoletiva.dto.*;
 import br.edu.ifsc.sistemafeiracoletiva.service.OfertaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,15 @@ public class OfertaController {
     }
 
     /**
+     * Retorna todos as Ofertas cadastrados e seus produtos.
+     * @return lista de OfertaSeusProdutosOutputDTO
+     */
+    @GetMapping("/produtos")
+    public List<OfertaSeusProdutosOutputDTO> listarOfertasProdutos() {
+        return service.listarOfertasProdutos();
+    }
+
+    /**
      * Retorna uma oferta por ID.
      * @param id identificador do oferta
      * @return oferta encontrado ou 404
@@ -40,6 +48,18 @@ public class OfertaController {
     @GetMapping("/{id}")
     public ResponseEntity<OfertaOutputDTO> buscarPorId(@PathVariable int id) {
         Optional<OfertaOutputDTO> oferta = service.buscarPorId(id);
+        return oferta.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Retorna um oferta por ID.
+     * @param id identificador a oferta e seus produtos
+     * @return oferta encontrado ou 404
+     */
+    @GetMapping("produtos/{id}")
+    public ResponseEntity<OfertaSeusProdutosOutputDTO> buscarPorIdOfertasProdutos(@PathVariable int id) {
+        Optional<OfertaSeusProdutosOutputDTO> oferta = service.buscarPorIdOfertasProdutos(id);
         return oferta.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
