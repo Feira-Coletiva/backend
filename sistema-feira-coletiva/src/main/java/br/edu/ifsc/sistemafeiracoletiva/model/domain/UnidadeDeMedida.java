@@ -1,5 +1,5 @@
 package br.edu.ifsc.sistemafeiracoletiva.model.domain;
 
-public enum Medida {
+public enum UnidadeDeMedida {
     KG, ML, UN;
 }

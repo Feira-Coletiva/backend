@@ -1,9 +1,13 @@
 package br.edu.ifsc.sistemafeiracoletiva.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DTO usado para entrada de dados (POST e PUT).
@@ -23,3 +27,4 @@ public class OfertaInputDTO {
     @NotNull(message = "ID de vendedor é obrigatório")
     private Integer idVendedor;
 }
+

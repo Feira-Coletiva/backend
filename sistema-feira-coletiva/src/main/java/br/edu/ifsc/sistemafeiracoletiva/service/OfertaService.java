@@ -1,12 +1,12 @@
 package br.edu.ifsc.sistemafeiracoletiva.service;
 
 
-import br.edu.ifsc.sistemafeiracoletiva.dto.OfertaInputDTO;
-import br.edu.ifsc.sistemafeiracoletiva.dto.OfertaOutputDTO;
-import br.edu.ifsc.sistemafeiracoletiva.dto.ResumoVendedorOfertaDTO;
+import br.edu.ifsc.sistemafeiracoletiva.dto.*;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Oferta;
+import br.edu.ifsc.sistemafeiracoletiva.model.domain.Produto;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Vendedor;
 import br.edu.ifsc.sistemafeiracoletiva.repository.OfertaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  * Classe de serviço para Oferta.
  * Responsável por conter as regras de negócio e chamadas ao repository.
  */
+@Slf4j
 @Service
 public class OfertaService {
 
@@ -38,11 +39,29 @@ public class OfertaService {
     }
 
     /**
+     * Lista todos os ofertas e seus produtos, convertendo as entidades para DTOs antes de devolver.
+     */
+    public List<OfertaSeusProdutosOutputDTO> listarOfertasProdutos() {
+        return repository.findAll()
+                .stream()
+                .map(this::toOutputMoreProdutosDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Busca um Oferta por ID e devolve um Optional<OfertaOutputDTO>.
      */
     public Optional<OfertaOutputDTO> buscarPorId(int id) {
         return repository.findById(id)
                 .map(this::toOutputDTO);
+    }
+
+    /**
+     * Busca um vendedor por ID e devolve um Optional<OfertaSeusProdutosOutputDTO>.
+     */
+    public Optional<OfertaSeusProdutosOutputDTO> buscarPorIdOfertasProdutos(int id) {
+        return repository.findById(id)
+                .map(this::toOutputMoreProdutosDTO);
     }
 
     /**
@@ -62,6 +81,7 @@ public class OfertaService {
         if (id != null) {
             oferta.setId(id); // Atualização
         }
+        oferta.calcularQtdEstoqueTotal();
         Oferta salvo = repository.save(oferta);
         return toOutputDTO(salvo);
     }
@@ -84,6 +104,7 @@ public class OfertaService {
      * Remove uma oferta pelo ID.
      */
     public void deletar(int id) {
+
         repository.deleteById(id);
     }
 
@@ -98,9 +119,21 @@ public class OfertaService {
      * Converte uma entidade Oferta para DTO de saída.
      */
     private OfertaOutputDTO toOutputDTO(Oferta o) {
-        ResumoVendedorOfertaDTO  dto = new ResumoVendedorOfertaDTO(o.getVendedor().getId(), o.getVendedor().getTelefone(), o.getVendedor().getChavePix());
-        return new OfertaOutputDTO(o.getId(), o.getTitulo(), o.getDescricao(),o.getDispStatus(), dto);
+        ResumoVendedorOfertaDTO  dtoVendedor = new ResumoVendedorOfertaDTO(o.getVendedor().getId(), o.getVendedor().getTelefone(), o.getVendedor().getChavePix());
+        return new OfertaOutputDTO(o.getId(), o.getTitulo(), o.getDescricao(),o.getQtdEstoqueTotal(), o.getStatusDisponibilidade(), dtoVendedor);
     }
+
+    /**
+     * Converte uma entidade Oferta para DTO de saída com produtos.
+     */
+    private OfertaSeusProdutosOutputDTO toOutputMoreProdutosDTO(Oferta o) {
+        ResumoVendedorOfertaDTO  dtoVendedor = new ResumoVendedorOfertaDTO(o.getVendedor().getId(), o.getVendedor().getTelefone(), o.getVendedor().getChavePix());
+        List<ResumoProdutoOfertaDTO> dtoProdutos = o.getProdutos().stream()
+                .map(p -> new ResumoProdutoOfertaDTO(p.getId(), p.getNome(), p.getUnidadeMedida().toString(), p.getMedida(), p.getPreco(), p.getQtdEstoque()))
+                .collect(Collectors.toList());
+        return new OfertaSeusProdutosOutputDTO(o.getId(), o.getTitulo(), o.getDescricao(), o.getQtdEstoqueTotal(), o.getStatusDisponibilidade(), dtoVendedor, dtoProdutos);
+    }
+
 
     /**
      * Converte do DTO de entrada para entidade.
@@ -114,3 +147,4 @@ public class OfertaService {
         return o;
     }
 }
+

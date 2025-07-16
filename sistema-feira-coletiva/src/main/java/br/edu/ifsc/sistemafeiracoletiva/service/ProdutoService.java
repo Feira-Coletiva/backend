@@ -3,9 +3,11 @@ package br.edu.ifsc.sistemafeiracoletiva.service;
 import br.edu.ifsc.sistemafeiracoletiva.dto.*;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.*;
 import br.edu.ifsc.sistemafeiracoletiva.repository.ProdutoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
  * Classe de serviço para Produto.
  * Responsável por conter as regras de negócio e chamadas ao repository.
  */
+@Slf4j
 @Service
 public class ProdutoService {
 
@@ -47,7 +50,9 @@ public class ProdutoService {
      * Retorna o DTO da entidade salva.
      */
     public ProdutoOutputDTO salvar(ProdutoInputDTO dto, Integer id) {
+        Oferta oferta = ofertaService.buscarEntidadePorId(dto.getIdOferta());
         Produto produto = toEntity(dto);
+        produto.setOferta(oferta);
         if (id != null) {
             produto.setId(id); // Atualização
         }
@@ -100,7 +105,7 @@ public class ProdutoService {
         Categoria c = categoriaService.buscarEntidadePorId(dto.getIdCategoria());
         p.setCategoria(c);
         // converter a String para o Enum Medida na hora de setar (Medida.valueOf())
-        p.setUnidadeMedida(Medida.valueOf(dto.getUnidadeMedida().toUpperCase())); // Normalizar para maiúsculo ao converter (toUpperCase())
+        p.setUnidadeMedida(UnidadeDeMedida.valueOf(dto.getUnidadeMedida().toUpperCase())); // Normalizar para maiúsculo ao converter (toUpperCase())
         p.setMedida(dto.getMedida());
         p.setPreco(dto.getPreco());
         p.setQtdEstoque(dto.getQtdEstoque());
@@ -117,7 +122,7 @@ public class ProdutoService {
         p.setNome(dto.getNome());
         Categoria c = categoriaService.buscarEntidadePorId(dto.getIdCategoria());
         p.setCategoria(c);
-        p.setUnidadeMedida(Medida.valueOf(dto.getUnidadeMedida().toUpperCase()));
+        p.setUnidadeMedida(UnidadeDeMedida.valueOf(dto.getUnidadeMedida().toUpperCase()));
         p.setMedida(dto.getMedida());
         p.setPreco(dto.getPreco());
         p.setQtdEstoque(dto.getQtdEstoque());

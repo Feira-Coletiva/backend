@@ -9,7 +9,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 
-
+/**
+ * Entidade JPA que representa a tabela "produtos" no banco de dados.
+ */
 @Entity
 @Data
 @Table(name = "produtos")
@@ -27,7 +29,7 @@ public class Produto {
     @Column(name = "unidade_medida", nullable = false)
     @NotNull(message = "A unidade de medida é obrigatória")
     @Enumerated(EnumType.STRING)
-    private Medida unidadeMedida = Medida.KG;
+    private UnidadeDeMedida unidadeMedida = UnidadeDeMedida.KG;
 
     @Column(name = "medida")
     @NotNull(message = "O medida é obrigatório")

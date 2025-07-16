@@ -39,8 +39,8 @@ public class ProdutoController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoOutputDTO> buscarPorId(@PathVariable int id) {
-        Optional<ProdutoOutputDTO> oferta = service.buscarPorId(id);
-        return oferta.map(ResponseEntity::ok)
+        Optional<ProdutoOutputDTO> produto = service.buscarPorId(id);
+        return produto.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -66,22 +66,6 @@ public class ProdutoController {
         List<ProdutoOutputDTO> salvos = service.salvarTodos(dtos);
         return ResponseEntity.ok(salvos);
     }
-
-//    @PostMapping("/lote/oferta/{idOferta}")
-//    public ResponseEntity<List<ProdutoOutputDTO>> criarLoteEmOferta(
-//            @PathVariable int idOferta,
-//            @RequestBody List<ProdutoInputDTO> dtos) {
-//
-//        Oferta oferta = ofertaService.buscarEntidadePorId(idOferta);
-//
-//        List<Produto> produtos = dtos.stream()
-//                .map(dto -> produtoService.toEntity(dto, oferta)) // AQUI USAMOS O MÉTODO
-//                .collect(Collectors.toList());
-//
-//        List<ProdutoOutputDTO> salvos = produtoService.salvarTodos(produtos);
-//
-//        return ResponseEntity.ok(salvos);
-//    }
 
     /**
      * Atualiza os dados de uma produto existente.
