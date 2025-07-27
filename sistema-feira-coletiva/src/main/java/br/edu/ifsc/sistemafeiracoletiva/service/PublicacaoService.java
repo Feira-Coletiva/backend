@@ -49,7 +49,7 @@ public class PublicacaoService {
      */
     public Publicacao buscarEntidadePorId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Publicações não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Publicação não encontrado"));
     }
 
     /**

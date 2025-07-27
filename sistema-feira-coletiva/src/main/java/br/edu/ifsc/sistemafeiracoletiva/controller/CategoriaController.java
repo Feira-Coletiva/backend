@@ -44,6 +44,18 @@ public class CategoriaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+//    /**
+//     * Retorna um categoria por Nome.
+//     * @param nome identificador do categoria
+//     * @return categoria encontrado ou 404
+//     */
+//    @GetMapping("/{nome}")
+//    public ResponseEntity<CategoriaOutputDTO> buscarPorId(@PathVariable String nome) {
+//        Optional<CategoriaOutputDTO> categoria = service.buscarEntidadePorNome(nome);
+//        return categoria.map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
+
     /**
      * Cadastra um novo categoria.
      * @param dto objeto recebido no corpo da requisição

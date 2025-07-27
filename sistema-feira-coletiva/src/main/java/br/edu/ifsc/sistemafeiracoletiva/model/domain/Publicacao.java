@@ -1,5 +1,6 @@
 package br.edu.ifsc.sistemafeiracoletiva.model.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,7 +8,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Entidade JPA que representa a tabela "publicacao" no banco de dados.
+ */
 @Entity
 @Data
 @Table(name = "publicacoes")
@@ -37,4 +43,8 @@ public class Publicacao {
     @ManyToOne
     @JoinColumn(name = "id_oferta")
     private Oferta oferta;
+
+    @OneToMany(mappedBy = "publicacao", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("publicacao")
+    private List<Participante> participantes = new ArrayList<>();
 }

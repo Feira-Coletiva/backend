@@ -3,6 +3,7 @@ package br.edu.ifsc.sistemafeiracoletiva.service;
 import br.edu.ifsc.sistemafeiracoletiva.dto.ClienteInputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.dto.ClienteOutputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Cliente;
+import br.edu.ifsc.sistemafeiracoletiva.model.domain.Vendedor;
 import br.edu.ifsc.sistemafeiracoletiva.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,12 +46,22 @@ public class ClienteService {
     }
 
     /**
+     * Busca um vendedor por ID e devolve um entidade de vendedor.
+     */
+    public Cliente buscarEntidadePorId(int id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    }
+
+    /**
      * Busca um cliente por ID e devolve uma entidade Cliente.
      */
     public Cliente buscarClientePorEmail(String email) {
         return repository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
     }
+
+
 
     /**
      * Salva um novo cliente ou atualiza um cliente existente.

@@ -1,9 +1,11 @@
 package br.edu.ifsc.sistemafeiracoletiva.controller;
 
 import br.edu.ifsc.sistemafeiracoletiva.dto.*;
+import br.edu.ifsc.sistemafeiracoletiva.model.domain.Oferta;
 import br.edu.ifsc.sistemafeiracoletiva.service.OfertaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,6 +87,20 @@ public class OfertaController {
     public ResponseEntity<List<OfertaOutputDTO>> criarLote(@RequestBody List<OfertaInputDTO> dtos) {
         List<OfertaOutputDTO> salvos = service.salvarTodos(dtos);
         return ResponseEntity.ok(salvos);
+    }
+
+    /**
+     * Cadastra uma nova oferta com produtos.
+     * @param dto objeto recebido no corpo da requisição
+     * @return oferta salva
+     */
+    @PostMapping("/produtos")
+    public ResponseEntity<Oferta> criarOfertaComProdutos(@Valid @RequestBody OfertaProdutosInputDTO dto) {
+        // Validação básica já foi feita pelo @Valid no DTO.
+        // A lógica de negócio (cálculo de estoque total, status, associação com vendedor e produtos)
+        // é delegada ao serviço.
+        Oferta salvo = service.salvarOfertaEProdutos(dto);
+        return new ResponseEntity<>(salvo, HttpStatus.CREATED);
     }
 
     /**

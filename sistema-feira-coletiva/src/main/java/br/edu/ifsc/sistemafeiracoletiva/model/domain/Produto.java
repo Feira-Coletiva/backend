@@ -51,4 +51,15 @@ public class Produto {
     @JoinColumn(name = "id_oferta", nullable = false)
     @JsonIgnoreProperties("produtos")
     private Oferta oferta;
+
+    public Produto() {}
+
+    public Produto(String nome, Categoria categoria, UnidadeDeMedida unidadeMedida, Double medida, Double preco, Integer qtdEstoque) {
+        this.nome = nome;
+        this.categoria = categoria;
+        this.unidadeMedida = unidadeMedida;
+        this.medida = medida;
+        this.preco = preco;
+        this.qtdEstoque = qtdEstoque;
+    }
 }

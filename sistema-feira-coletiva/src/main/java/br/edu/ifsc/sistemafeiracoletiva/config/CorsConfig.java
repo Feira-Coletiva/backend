@@ -15,9 +15,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://127.0.0.1:5500") // porta do seu front
+                        .allowedOrigins("http://127.0.0.1:5500", "http://localhost:5500", "http://127.0.0.1:5501", "http://localhost:5501") // Adicione todas as portas que seu frontend pode usar
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*") // CORREÇÃO: Permite todos os cabeçalhos
+                        .allowCredentials(true); // Permite o envio de cookies, cabeçalhos de autorização, etc.
             }
         };
     }

@@ -2,10 +2,12 @@ package br.edu.ifsc.sistemafeiracoletiva.service;
 
 
 import br.edu.ifsc.sistemafeiracoletiva.dto.*;
+import br.edu.ifsc.sistemafeiracoletiva.model.domain.Categoria;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Oferta;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Produto;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Vendedor;
 import br.edu.ifsc.sistemafeiracoletiva.repository.OfertaRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class OfertaService {
 
     @Autowired
     private VendedorService vendedorService;
+
+    @Autowired
+    private CategoriaService categoriaService; // Para lidar com categorias
 
     /**
      * Lista todos os ofertas, convertendo as entidades para DTOs antes de devolver.
@@ -100,6 +105,34 @@ public class OfertaService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public Oferta salvarOfertaEProdutos(OfertaProdutosInputDTO dto) {
+        Vendedor v = vendedorService.buscarEntidadePorId(dto.getVendedorId());
+        Oferta oferta = new Oferta(dto.getTitulo(), dto.getDescricao(), v);
+        Integer qtdEstoqueTotal = 0;
+
+        for (ProdutoParaOfertaInputDTO produtoDto : dto.getProdutos()) {
+            // Busca ou cria a categoria
+            Categoria categoria = categoriaService.buscarEntidadePorNome(produtoDto.getCategoria());
+
+            Produto produto = new Produto(
+                    produtoDto.getNome(),
+                    categoria,
+                    produtoDto.getUnidadeMedida(),
+                    produtoDto.getMedida(),
+                    produtoDto.getPreco(),
+                    produtoDto.getQtdEstoque()
+            );
+            oferta.addProduto(produto); // Adiciona o produto e configura a relação bidirecional
+            qtdEstoqueTotal += produto.getQtdEstoque();
+        }
+
+        oferta.setQtdEstoqueTotal(qtdEstoqueTotal);
+        oferta.setStatusDisponibilidade(true); // Definido como true ao criar/publicar
+
+        return repository.save(oferta);
+    }
+
     /**
      * Remove uma oferta pelo ID.
      */
@@ -146,5 +179,17 @@ public class OfertaService {
         o.setVendedor(v);
         return o;
     }
+
+//    /**
+//     * Converte do DTO de entrada para entidade.
+//     */
+//    private Oferta toEntityMoreProdutos(OfertaProdutosInputDTO dto) {
+//        Oferta o = new Oferta();
+//        o.setTitulo(dto.getTitulo());
+//        o.setDescricao(dto.getDescricao());
+//        Vendedor v = vendedorService.buscarEntidadePorId(dto.getIdVendedor());
+//        o.setVendedor(v);
+//        return o;
+//    }
 }
 

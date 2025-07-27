@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * Configuração completa de segurança para JWT.
  */
 @Configuration
+@EnableWebSecurity // Certifique-se de que esta anotação está presente
 public class SecurityConfig {
+
+    // Certifique-se de que essas dependências estão corretas e que os pacotes estão ajustados
+    // @Autowired
+    // private JwtService jwtService;
+    // @Autowired
+    // private ClienteService clienteService;
+
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService, ClienteService clienteService) {
@@ -49,12 +58,12 @@ public class SecurityConfig {
                                                    JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
+                // .cors(cors -> cors.disable()) // REMOVIDO: Não desabilite o CORS aqui!
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/**").permitAll() // Permite todas as requisições para /api/** (incluindo /api/clientes)
+                        .requestMatchers("/auth/**").permitAll() // Permite todas as requisições para /auth/**
+                        .anyRequest().permitAll() // Permite todas as outras requisições
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

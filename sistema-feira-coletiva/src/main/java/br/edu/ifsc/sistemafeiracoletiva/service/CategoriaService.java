@@ -48,6 +48,14 @@ public class CategoriaService {
     }
 
     /**
+     * Busca uma categoria por ID e devolve um entidade de categoria.
+     */
+    public Categoria buscarEntidadePorNome(String nome) {
+        return repository.findByNome(nome)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrado"));
+    }
+
+    /**
      * Salva um novo categoria ou atualiza um categoria existente.
      * Retorna o DTO da entidade salva.
      */

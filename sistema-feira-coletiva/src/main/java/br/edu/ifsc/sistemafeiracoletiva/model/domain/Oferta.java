@@ -46,27 +46,46 @@ public class Oferta {
     @JsonIgnoreProperties("ofertas")
     private Vendedor vendedor;
 
-    @OneToMany(mappedBy = "oferta", cascade = CascadeType.ALL, orphanRemoval = true)    // CascadeType.ALL: persistir/remover produtos automaticamente junto com a oferta.
+    @OneToMany(mappedBy = "oferta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)   // CascadeType.ALL: persistir/remover produtos automaticamente junto com a oferta.
     @JsonIgnoreProperties("oferta")                                                     // orphanRemoval = true: produtos removidos da lista também são removidos do banco.
     private List<Produto> produtos = new ArrayList<>();
 
-    // ✅ Calcula e atualiza o estoque total da oferta
+    public Oferta() {}
+
+    public Oferta(String titulo, String descricao, Vendedor vendedor) {
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.vendedor = vendedor;
+        this.qtdEstoqueTotal = 0; // Valor inicial
+        this.statusDisponibilidade = false; // Valor inicial
+    }
+
+    // Calcula e atualiza o estoque total da oferta
     public void calcularQtdEstoqueTotal() {
         this.qtdEstoqueTotal = produtos.stream()
                 .mapToInt(Produto::getQtdEstoque)
                 .sum();
     }
 
-    // ✅ Adiciona produto e recalcula estoque total
+    // Adiciona produto e recalcula estoque total
     public void addProduto(Produto produto) {
-        produto.setOferta(this);
-        produtos.add(produto);
-        calcularQtdEstoqueTotal();
+        this.produtos.add(produto);
+        produto.setOferta(this); // Configura o lado "many" da relação
     }
 
-    // ✅ Remove produto e recalcula estoque total
-    public void removerProduto(Produto produto) {
-        produtos.remove(produto);
-        calcularQtdEstoqueTotal();
+    // Remove produto e recalcula estoque total
+    public void removeProduto(Produto produto) {
+        this.produtos.remove(produto);
+        produto.setOferta(null);
+    }
+
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos.clear(); // Limpa a lista existente para evitar duplicatas ou produtos órfãos
+        if (produtos != null) {
+            // Garante que a relação bidirecional seja configurada para cada novo produto
+            for (Produto produto : produtos) {
+                this.addProduto(produto);
+            }
+        }
     }
 }
