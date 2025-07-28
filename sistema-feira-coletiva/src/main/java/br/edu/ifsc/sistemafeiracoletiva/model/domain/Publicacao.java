@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,28 +24,40 @@ public class Publicacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "dt_final_exposicao")
-    @NotBlank(message = "O data final de exposição é obrigatório")
+    @Column(name = "dt_final_exposicao", nullable = false)
+    @NotNull(message = "A data final de exposição é obrigatória")
     private LocalDate dtFinalExposicao;
 
-    @Column(name = "dt_final_pagamento")
-    @NotBlank(message = "O data final de pagamento é obrigatório")
+    @Column(name = "dt_final_pagamento", nullable = false)
+    @NotNull(message = "A data final de pagamento é obrigatória")
     private LocalDate dtFinalPagamento;
 
     @Column(name = "etapa", nullable = false)
     @NotNull(message = "A etapa é obrigatória")
     @Enumerated(EnumType.STRING)
-    private Etapa etapa = Etapa.INCOMPLETO;
+    private Etapa etapa = Etapa.EXPOSICAO;
 
-    @ManyToOne
-    @JoinColumn(name = "id_local_de_retirada")
+    @ManyToOne(fetch = FetchType.EAGER) // ✅ Usando EAGER aqui para garantir que o LocalDeRetirada seja carregado junto
+    @JoinColumn(name = "id_local_de_retirada", nullable = false)
     private LocalDeRetirada localDeRetirada;
 
-    @ManyToOne
-    @JoinColumn(name = "id_oferta")
+    @ManyToOne(fetch = FetchType.EAGER) // ✅ Usando EAGER aqui para garantir que a Oferta seja carregada junto
+    @JoinColumn(name = "id_oferta", nullable = false)
     private Oferta oferta;
 
     @OneToMany(mappedBy = "publicacao", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("publicacao")
     private List<Participante> participantes = new ArrayList<>();
+
+    public Publicacao() {}
+
+    // Construtor para criar uma nova publicação com a etapa inicial EXPOSICAO
+    public Publicacao(LocalDate dtFinalExposicao, LocalDate dtFinalPagamento, LocalDeRetirada localDeRetirada, Oferta oferta) {
+        this.dtFinalExposicao = dtFinalExposicao;
+        this.dtFinalPagamento = dtFinalPagamento;
+        this.localDeRetirada = localDeRetirada;
+        this.oferta = oferta;
+        this.etapa = Etapa.EXPOSICAO;
+        this.participantes = new ArrayList<>();
+    }
 }

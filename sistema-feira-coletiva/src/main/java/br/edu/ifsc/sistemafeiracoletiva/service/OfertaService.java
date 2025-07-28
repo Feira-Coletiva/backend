@@ -31,13 +31,23 @@ public class OfertaService {
     private VendedorService vendedorService;
 
     @Autowired
-    private CategoriaService categoriaService; // Para lidar com categorias
+    private CategoriaService categoriaService;
 
     /**
      * Lista todos os ofertas, convertendo as entidades para DTOs antes de devolver.
      */
     public List<OfertaOutputDTO> listar() {
         return repository.findAll()
+                .stream()
+                .map(this::toOutputDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * ✅ NOVO: Lista todas as ofertas que estão com o status de disponibilidade TRUE.
+     */
+    public List<OfertaOutputDTO> listarOfertasDisponiveis() {
+        return repository.findByStatusDisponibilidadeTrue()
                 .stream()
                 .map(this::toOutputDTO)
                 .collect(Collectors.toList());
@@ -92,6 +102,13 @@ public class OfertaService {
     }
 
     /**
+     * ✅ NOVO: Salva diretamente uma entidade Oferta (útil para atualizar o status).
+     */
+    public Oferta salvarEntidade(Oferta oferta) {
+        return repository.save(oferta);
+    }
+
+    /**
      * Salva uma lista de ofertas (ex: cadastro em lote).
      */
     public List<OfertaOutputDTO> salvarTodos(List<OfertaInputDTO> dtos) {
@@ -123,12 +140,12 @@ public class OfertaService {
                     produtoDto.getPreco(),
                     produtoDto.getQtdEstoque()
             );
-            oferta.addProduto(produto); // Adiciona o produto e configura a relação bidirecional
+            oferta.addProduto(produto);
             qtdEstoqueTotal += produto.getQtdEstoque();
         }
 
         oferta.setQtdEstoqueTotal(qtdEstoqueTotal);
-        oferta.setStatusDisponibilidade(true); // Definido como true ao criar/publicar
+        oferta.setStatusDisponibilidade(true);
 
         return repository.save(oferta);
     }
@@ -137,7 +154,6 @@ public class OfertaService {
      * Remove uma oferta pelo ID.
      */
     public void deletar(int id) {
-
         repository.deleteById(id);
     }
 
@@ -149,18 +165,59 @@ public class OfertaService {
     }
 
     /**
-     * Converte uma entidade Oferta para DTO de saída.
+     * Converte uma entidade Oferta para DTO de saída, incluindo seus produtos.
+     * Retorna a lista de produtos.
      */
-    private OfertaOutputDTO toOutputDTO(Oferta o) {
-        ResumoVendedorOfertaDTO  dtoVendedor = new ResumoVendedorOfertaDTO(o.getVendedor().getId(), o.getVendedor().getTelefone(), o.getVendedor().getChavePix());
-        return new OfertaOutputDTO(o.getId(), o.getTitulo(), o.getDescricao(),o.getQtdEstoqueTotal(), o.getStatusDisponibilidade(), dtoVendedor);
+    public OfertaOutputDTO toOutputDTO(Oferta o) {
+        VendedorOutputDTO dtoVendedor = new VendedorOutputDTO(
+                o.getVendedor().getId(),
+                o.getVendedor().getNome(),
+                o.getVendedor().getEmail(),
+                o.getVendedor().getTelefone(),
+                o.getVendedor().getChavePix()
+        );
+
+        // ✅ Converte a lista de entidades Produto para uma lista de DTOs
+        List<ProdutoOutputDTO> dtoProdutos = o.getProdutos().stream()
+                .map(this::toProdutoOutputDTO)
+                .collect(Collectors.toList());
+
+        return new OfertaOutputDTO(
+                o.getId(),
+                o.getTitulo(),
+                o.getDescricao(),
+                o.getQtdEstoqueTotal(),
+                o.getStatusDisponibilidade(),
+                dtoVendedor,
+                dtoProdutos // ✅ Passamos a lista de produtos
+        );
+    }
+
+    private ProdutoOutputDTO toProdutoOutputDTO(Produto p) {
+        CategoriaOutputDTO dto = new CategoriaOutputDTO(p.getCategoria().getId(), p.getCategoria().getNome());
+        return new ProdutoOutputDTO(
+                p.getId(),
+                p.getNome(),
+                dto,
+                p.getUnidadeMedida().toString(),
+                p.getMedida(),
+                p.getPreco(),
+                p.getQtdEstoque()
+        );
     }
 
     /**
      * Converte uma entidade Oferta para DTO de saída com produtos.
      */
     private OfertaSeusProdutosOutputDTO toOutputMoreProdutosDTO(Oferta o) {
-        ResumoVendedorOfertaDTO  dtoVendedor = new ResumoVendedorOfertaDTO(o.getVendedor().getId(), o.getVendedor().getTelefone(), o.getVendedor().getChavePix());
+        // ✅ CORRIGIDO: Agora usa o DTO completo do vendedor.
+        VendedorOutputDTO dtoVendedor = new VendedorOutputDTO(
+                o.getVendedor().getId(),
+                o.getVendedor().getNome(),
+                o.getVendedor().getEmail(),
+                o.getVendedor().getTelefone(),
+                o.getVendedor().getChavePix()
+        );
         List<ResumoProdutoOfertaDTO> dtoProdutos = o.getProdutos().stream()
                 .map(p -> new ResumoProdutoOfertaDTO(p.getId(), p.getNome(), p.getUnidadeMedida().toString(), p.getMedida(), p.getPreco(), p.getQtdEstoque()))
                 .collect(Collectors.toList());
@@ -179,17 +236,5 @@ public class OfertaService {
         o.setVendedor(v);
         return o;
     }
-
-//    /**
-//     * Converte do DTO de entrada para entidade.
-//     */
-//    private Oferta toEntityMoreProdutos(OfertaProdutosInputDTO dto) {
-//        Oferta o = new Oferta();
-//        o.setTitulo(dto.getTitulo());
-//        o.setDescricao(dto.getDescricao());
-//        Vendedor v = vendedorService.buscarEntidadePorId(dto.getIdVendedor());
-//        o.setVendedor(v);
-//        return o;
-//    }
 }
 

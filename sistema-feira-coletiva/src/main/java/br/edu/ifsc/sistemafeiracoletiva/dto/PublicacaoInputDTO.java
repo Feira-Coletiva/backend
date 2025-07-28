@@ -13,15 +13,13 @@ import java.time.LocalDate;
  */
 @Data
 public class PublicacaoInputDTO {
-
-    @NotBlank(message = "Data final de exposição é obrigatório")
+    @NotNull(message = "Data final de exposição é obrigatória")
     private LocalDate dtFinalExposicao;
 
-    @NotBlank(message = "Data final de exposição é obrigatório")
+    @NotNull(message = "Data final de exposição é obrigatória")
     private LocalDate dtFinalPagamento;
 
-    @NotBlank(message = "O unidade de medida é obrigatório")
-    private String etapa;
+    // Etapa é definida no backend, não precisa vir do frontend
 
     @NotNull(message = "Relação com local de retirada é obrigatória")
     private Integer idLocalDeRetirada;

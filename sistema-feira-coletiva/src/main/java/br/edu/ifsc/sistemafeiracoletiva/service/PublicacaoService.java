@@ -6,6 +6,7 @@ import br.edu.ifsc.sistemafeiracoletiva.model.domain.LocalDeRetirada;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Oferta;
 import br.edu.ifsc.sistemafeiracoletiva.model.domain.Publicacao;
 import br.edu.ifsc.sistemafeiracoletiva.repository.PublicacaoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class PublicacaoService {
     private LocalDeRetiradaService localDeRetiradaService;
 
     /**
-     * Lista todos as publicação, convertendo as entidades para DTOs antes de devolver.
+     * Lista todas as publicações, convertendo as entidades para DTOs antes de devolver.
      */
     public List<PublicacaoOutputDTO> listar() {
         return repository.findAll()
@@ -37,7 +38,20 @@ public class PublicacaoService {
     }
 
     /**
-     * Busca um publicacao por ID e devolve um Optional<PublicacaoOutputDTO>.
+     * Lista as publicações referentes a um vendedor específico.
+     *
+     * @param vendedorId O ID do vendedor.
+     * @return Uma lista de DTOs de publicações.
+     */
+    public List<PublicacaoOutputDTO> listarPorVendedor(Integer vendedorId) {
+        return repository.findByOfertaVendedorId(vendedorId)
+                .stream()
+                .map(this::toOutputDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Busca uma publicação por ID e devolve um Optional<PublicacaoOutputDTO>.
      */
     public Optional<PublicacaoOutputDTO> buscarPorId(int id) {
         return repository.findById(id)
@@ -53,21 +67,36 @@ public class PublicacaoService {
     }
 
     /**
-     * Salva um nova publicacao ou atualiza um oferta existente.
+     * ✅ RE-ADICIONADO: Salva uma nova publicação ou atualiza uma existente.
      * Retorna o DTO da entidade salva.
      */
+    @Transactional
     public PublicacaoOutputDTO salvar(PublicacaoInputDTO dto, Integer id) {
+        // Lógica de validação e atualização do status da oferta para POST e PUT
+        Oferta oferta = ofertaService.buscarEntidadePorId(dto.getIdOferta());
+
+        // Apenas para criação (POST): verifica disponibilidade e altera status
+        if (id == null) {
+            if (!oferta.getStatusDisponibilidade()) {
+                throw new IllegalArgumentException("A oferta selecionada não está disponível para uma nova publicação.");
+            }
+            oferta.setStatusDisponibilidade(Boolean.FALSE);
+            ofertaService.salvarEntidade(oferta);
+        }
+
         Publicacao publicacao = toEntity(dto);
         if (id != null) {
-            publicacao.setId(id); // Atualização
+            publicacao.setId(id); // Para atualização
         }
+
         Publicacao salvo = repository.save(publicacao);
         return toOutputDTO(salvo);
     }
 
     /**
-     * Salva uma lista de publicacoes (ex: cadastro em lote).
+     * ✅ RE-ADICIONADO: Salva uma lista de publicacoes (ex: cadastro em lote).
      */
+    @Transactional
     public List<PublicacaoOutputDTO> salvarTodos(List<PublicacaoInputDTO> dtos) {
         List<Publicacao> publicacoes = dtos.stream()
                 .map(this::toEntity)
@@ -80,14 +109,14 @@ public class PublicacaoService {
     }
 
     /**
-     * Remove uma publicacao pelo ID.
+     * ✅ RE-ADICIONADO: Remove uma publicacao pelo ID.
      */
     public void deletar(int id) {
         repository.deleteById(id);
     }
 
     /**
-     * Verifica se uma publicacao existe por ID.
+     * ✅ RE-ADICIONADO: Verifica se uma publicacao existe por ID.
      */
     public boolean existePorId(int id) {
         return repository.existsById(id);
@@ -95,25 +124,42 @@ public class PublicacaoService {
 
     /**
      * Converte uma entidade Publicacao para DTO de saída.
+     * ✅ CORRIGIDO: Passa o OfertaOutputDTO que agora contém a lista de produtos.
      */
     private PublicacaoOutputDTO toOutputDTO(Publicacao p) {
-        LocalDeRetiradaOutputDTO dtoLocalDeRetirada = new LocalDeRetiradaOutputDTO(p.getLocalDeRetirada().getId(), p.getLocalDeRetirada().getNome(), p.getLocalDeRetirada().getCep());
-        return new PublicacaoOutputDTO(p.getId(), p.getDtFinalExposicao(), p.getDtFinalPagamento(), p.getEtapa().name(), dtoLocalDeRetirada);
+        LocalDeRetiradaOutputDTO dtoLocalDeRetirada = new LocalDeRetiradaOutputDTO(
+                p.getLocalDeRetirada().getId(),
+                p.getLocalDeRetirada().getNome(),
+                p.getLocalDeRetirada().getCep()
+        );
+
+        OfertaOutputDTO dtoOferta = ofertaService.toOutputDTO(p.getOferta());
+
+        return new PublicacaoOutputDTO(
+                p.getId(),
+                p.getDtFinalExposicao(),
+                p.getDtFinalPagamento(),
+                p.getEtapa().name(),
+                dtoLocalDeRetirada,
+                dtoOferta
+        );
     }
 
     /**
-     * Converte do DTO de entrada para entidade.
+     * ✅ RE-ADICIONADO: Converte do DTO de entrada para entidade.
      */
     private Publicacao toEntity(PublicacaoInputDTO dto) {
         Publicacao p = new Publicacao();
         p.setDtFinalExposicao(dto.getDtFinalExposicao());
         p.setDtFinalPagamento(dto.getDtFinalPagamento());
-        p.setEtapa(Etapa.valueOf(dto.getEtapa().toUpperCase()));
+        // A etapa pode vir do DTO ou ser definida como padrão
+//        p.setEtapa(Etapa.valueOf(dto.getEtapa().toUpperCase()));
+
         LocalDeRetirada lr = localDeRetiradaService.buscarEntidadePorId(dto.getIdLocalDeRetirada());
         Oferta o = ofertaService.buscarEntidadePorId(dto.getIdOferta());
+
         p.setLocalDeRetirada(lr);
         p.setOferta(o);
         return p;
     }
-
 }

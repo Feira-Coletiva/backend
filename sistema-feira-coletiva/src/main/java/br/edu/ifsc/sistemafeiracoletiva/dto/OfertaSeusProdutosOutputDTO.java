@@ -19,6 +19,6 @@ public class OfertaSeusProdutosOutputDTO {
     private String descricao;
     private Integer qtdEstoqueTotal; // Adicionado
     private Boolean statusDisponibilidade; // Nome ajustado
-    private ResumoVendedorOfertaDTO vendedor;
+    private VendedorOutputDTO vendedor;
     private List<ResumoProdutoOfertaDTO> produtos;
 }

@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VendedorOutputDTO {
-
     private Integer id;
     private String nome;
     private String email;

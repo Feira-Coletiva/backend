@@ -21,7 +21,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:5500")
 public class OfertaController {
 
-    @Autowired // Injeta automaticamente o serviço
+    @Autowired
     private OfertaService service;
 
     /**
@@ -31,6 +31,16 @@ public class OfertaController {
     @GetMapping
     public List<OfertaOutputDTO> listar() {
         return service.listar();
+    }
+
+    /**
+     * ✅ NOVO: Retorna todas as ofertas disponíveis para publicação.
+     * @return lista de OfertaOutputDTO
+     */
+    @GetMapping("/disponiveis")
+    public ResponseEntity<List<OfertaOutputDTO>> listarOfertasDisponiveis() {
+        List<OfertaOutputDTO> ofertas = service.listarOfertasDisponiveis();
+        return ResponseEntity.ok(ofertas);
     }
 
     /**
@@ -96,9 +106,6 @@ public class OfertaController {
      */
     @PostMapping("/produtos")
     public ResponseEntity<Oferta> criarOfertaComProdutos(@Valid @RequestBody OfertaProdutosInputDTO dto) {
-        // Validação básica já foi feita pelo @Valid no DTO.
-        // A lógica de negócio (cálculo de estoque total, status, associação com vendedor e produtos)
-        // é delegada ao serviço.
         Oferta salvo = service.salvarOfertaEProdutos(dto);
         return new ResponseEntity<>(salvo, HttpStatus.CREATED);
     }

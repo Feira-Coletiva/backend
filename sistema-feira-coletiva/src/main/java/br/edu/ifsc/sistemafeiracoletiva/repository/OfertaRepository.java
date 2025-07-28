@@ -13,4 +13,6 @@ import java.util.List;
 public interface OfertaRepository extends JpaRepository<Oferta, Integer> {
     @EntityGraph(attributePaths = {"produtos", "vendedor"})
     List<Oferta> findAll();
+    // Busca todas as ofertas onde status_disponibilidade é TRUE
+    List<Oferta> findByStatusDisponibilidadeTrue();
 }

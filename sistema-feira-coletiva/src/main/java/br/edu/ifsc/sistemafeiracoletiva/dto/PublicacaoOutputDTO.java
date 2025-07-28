@@ -19,4 +19,5 @@ public class PublicacaoOutputDTO {
     private LocalDate dtFinalPagamento;
     private String etapa;
     private LocalDeRetiradaOutputDTO localDeRetirada;
+    private OfertaOutputDTO oferta;
 }

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -33,6 +34,20 @@ public class PublicacaoController {
     }
 
     /**
+     * Retorna as publicações de um vendedor específico.
+     * @param vendedorId O ID do vendedor.
+     * @return lista de PublicacaoOutputDTO do vendedor.
+     */
+    @GetMapping("/vendedor/{vendedorId}")
+    public ResponseEntity<List<PublicacaoOutputDTO>> listarPorVendedor(@PathVariable Integer vendedorId) {
+        List<PublicacaoOutputDTO> publicacoes = service.listarPorVendedor(vendedorId);
+        if (publicacoes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(publicacoes);
+    }
+
+    /**
      * Retorna um publicacao por ID.
      * @param id identificador do publicacao
      * @return publicacao encontrado ou 404
@@ -52,12 +67,13 @@ public class PublicacaoController {
     @PostMapping
     public ResponseEntity<PublicacaoOutputDTO> criar(@RequestBody @Valid PublicacaoInputDTO dto) {
         PublicacaoOutputDTO salvo = service.salvar(dto, null);
-        URI location = URI.create("/api/publicacoes/" + salvo.getId());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(salvo.getId()).toUri();
         return ResponseEntity.created(location).body(salvo);
     }
 
     /**
-     * Cadastra vários publicacoes de uma vez.
+     * ✅ RE-ADICIONADO: Cadastra vários publicacoes de uma vez.
      * @param dtos lista de objetos a serem cadastrados
      * @return lista de publicacoes salvos
      */
@@ -68,7 +84,7 @@ public class PublicacaoController {
     }
 
     /**
-     * Atualiza os dados de um publicacao existente.
+     * ✅ RE-ADICIONADO: Atualiza os dados de um publicacao existente.
      * @param id identificador do publicacao
      * @param dto dados atualizados
      * @return publicacao atualizado ou 404
@@ -83,7 +99,7 @@ public class PublicacaoController {
     }
 
     /**
-     * Remove um publicacao do sistema.
+     * ✅ RE-ADICIONADO: Remove um publicacao do sistema.
      * @param id identificador do publicacao
      * @return status HTTP apropriado
      */
