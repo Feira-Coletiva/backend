@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * DTO usado para entrada de dados (POST e PUT).
  * O produto envia apenas esses campos no JSON da requisição.
@@ -29,7 +31,7 @@ public class ProdutoInputDTO {
 
     @NotNull(message = "O preço é obrigatório")
     @Min(value = 0, message = "O preço não pode ser negativo")
-    private Double preco;
+    private BigDecimal preco;
 
     @NotNull(message = "O quantidade em estoque é obrigatório")
     @Min(value = 1, message = "A quantidade em estoque deve ser pelo menos 1")

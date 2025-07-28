@@ -16,48 +16,52 @@ import java.util.List;
  * Entidade JPA que representa a tabela "publicacao" no banco de dados.
  */
 @Entity
-@Data
 @Table(name = "publicacoes")
+@Data
 @EqualsAndHashCode(of = {"id"})
+@NoArgsConstructor
 public class Publicacao {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "dt_final_exposicao", nullable = false)
-    @NotNull(message = "A data final de exposição é obrigatória")
     private LocalDate dtFinalExposicao;
 
     @Column(name = "dt_final_pagamento", nullable = false)
-    @NotNull(message = "A data final de pagamento é obrigatória")
     private LocalDate dtFinalPagamento;
 
-    @Column(name = "etapa", nullable = false)
-    @NotNull(message = "A etapa é obrigatória")
     @Enumerated(EnumType.STRING)
+    @Column(name = "etapa", nullable = false)
     private Etapa etapa = Etapa.EXPOSICAO;
 
-    @ManyToOne(fetch = FetchType.EAGER) // ✅ Usando EAGER aqui para garantir que o LocalDeRetirada seja carregado junto
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_local_de_retirada", nullable = false)
     private LocalDeRetirada localDeRetirada;
 
-    @ManyToOne(fetch = FetchType.EAGER) // ✅ Usando EAGER aqui para garantir que a Oferta seja carregada junto
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_oferta", nullable = false)
     private Oferta oferta;
 
+    // ✅ NOVO: Lista de participantes nesta publicação
     @OneToMany(mappedBy = "publicacao", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("publicacao")
+    @JsonIgnoreProperties("publicacao") // Evita recursão infinita JSON
     private List<Participante> participantes = new ArrayList<>();
 
-    public Publicacao() {}
-
-    // Construtor para criar uma nova publicação com a etapa inicial EXPOSICAO
+    // Construtor para criação de nova publicação (mantido do PublicacaoService)
     public Publicacao(LocalDate dtFinalExposicao, LocalDate dtFinalPagamento, LocalDeRetirada localDeRetirada, Oferta oferta) {
         this.dtFinalExposicao = dtFinalExposicao;
         this.dtFinalPagamento = dtFinalPagamento;
+        this.etapa = Etapa.EXPOSICAO; // Etapa inicial ao criar a publicação
         this.localDeRetirada = localDeRetirada;
         this.oferta = oferta;
-        this.etapa = Etapa.EXPOSICAO;
-        this.participantes = new ArrayList<>();
+        this.participantes = new ArrayList<>(); // Inicializa a lista
+    }
+
+    // Método para adicionar participante (se necessário, para gerenciar a lista)
+    public void addParticipante(Participante participante) {
+        this.participantes.add(participante);
+        participante.setPublicacao(this); // Garante a relação bidirecional
     }
 }

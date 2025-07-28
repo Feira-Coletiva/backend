@@ -7,54 +7,49 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 
 /**
  * Entidade JPA que representa a tabela "produtos" no banco de dados.
  */
 @Entity
-@Data
 @Table(name = "produtos")
+@Data
 @EqualsAndHashCode(of = {"id"})
+@NoArgsConstructor
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "nome")
-    @NotBlank(message = "O nome é obrigatório")
-    @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres")
+    @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Column(name = "unidade_medida", nullable = false)
-    @NotNull(message = "A unidade de medida é obrigatória")
-    @Enumerated(EnumType.STRING)
-    private UnidadeDeMedida unidadeMedida = UnidadeDeMedida.KG;
-
-    @Column(name = "medida")
-    @NotNull(message = "O medida é obrigatório")
-    private Double medida;
-
-    @Column(name = "preco")
-    @NotNull(message = "O preço é obrigatório")
-    private Double preco;
-
-    @Column(name = "qtd_estoque")
-    @NotNull(message = "O quantidade em estoque é obrigatório")
-    private Integer qtdEstoque;
-
-    @ManyToOne
-    @JoinColumn(name = "id_categoria")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    @Column(name = "unidade_medida", nullable = false)
+    private UnidadeDeMedida unidadeMedida;
+
+    @Column(name = "medida", nullable = false)
+    private Double medida; // Mantido como Double, pode ser BigDecimal se a precisão for crítica para a medida
+
+    @Column(name = "preco", nullable = false, precision = 10, scale = 2) // ✅ BigDecimal com precisão
+    private BigDecimal preco;
+
+    @Column(name = "qtd_estoque", nullable = false)
+    private Integer qtdEstoque;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_oferta", nullable = false)
-    @JsonIgnoreProperties("produtos")
     private Oferta oferta;
 
-    public Produto() {}
-
-    public Produto(String nome, Categoria categoria, UnidadeDeMedida unidadeMedida, Double medida, Double preco, Integer qtdEstoque) {
+    public Produto(String nome, Categoria categoria, UnidadeDeMedida unidadeMedida, Double medida, BigDecimal preco, Integer qtdEstoque) {
         this.nome = nome;
         this.categoria = categoria;
         this.unidadeMedida = unidadeMedida;

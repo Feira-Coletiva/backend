@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * DTO usado para saída de dados junto de Oferta (GET, POST response).
  * O backend envia apenas esses campos ao frontend.
@@ -17,6 +19,6 @@ public class ResumoProdutoOfertaDTO {
     private String nome;
     private String unidadeMedida;
     private Double medida;
-    private Double preco;
+    private BigDecimal preco;
     private Integer qtdEstoque;
 }

@@ -8,21 +8,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * DTO usado para saída de dados (GET, POST response) de um Participante.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParticipanteOutputDTO {
+public class ParticipanteResumoPublicacaoOutputDTO {
     private Integer id;
     private BigDecimal valorTotal;
     private Integer qtdTotalProdutos;
     private Boolean statusPago;
     private LocalDateTime dataParticipacao;
-    private ClienteOutputDTO cliente; // Detalhes do cliente
-    private PublicacaoResumoOutputDTO publicacao; // Resumo da publicação
-    private List<PedidoOutputDTO> pedidos; // Lista dos pedidos associados
+    private ClienteOutputDTO cliente; // Reutiliza ClienteOutputDTO
+    private List<PedidoOutputDTO> pedidos; // Inclui os pedidos completos
 }
-
-

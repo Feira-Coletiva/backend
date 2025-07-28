@@ -7,19 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * DTO usado para saída de dados (GET, POST response).
- * O backend envia apenas esses campos ao frontend.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProdutoOutputDTO {
+public class ProdutoSimplesOutputDTO {
     private Integer id;
     private String nome;
-    private CategoriaOutputDTO categoria;
-    private String unidadeMedida;
+    private String categoria;
+    private UnidadeDeMedida unidadeMedida;
     private Double medida; // Mantido como Double
-    private BigDecimal preco; // ✅ Alterado para BigDecimal
-    private Integer qtdEstoque;
 }

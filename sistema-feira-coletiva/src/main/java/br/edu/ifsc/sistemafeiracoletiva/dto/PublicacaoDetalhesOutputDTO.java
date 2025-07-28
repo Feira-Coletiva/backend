@@ -7,18 +7,17 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * DTO usado para saída de dados (GET, POST response).
- * O backend envia apenas esses campos ao frontend.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PublicacaoOutputDTO {
+public class PublicacaoDetalhesOutputDTO {
     private Integer id;
     private LocalDate dtFinalExposicao;
     private LocalDate dtFinalPagamento;
     private String etapa;
     private LocalDeRetiradaOutputDTO localDeRetirada;
     private OfertaOutputDTO oferta;
+
+    // ✅ NOVO: Lista de participantes desta publicação
+    private List<ParticipanteResumoPublicacaoOutputDTO> participantes;
 }

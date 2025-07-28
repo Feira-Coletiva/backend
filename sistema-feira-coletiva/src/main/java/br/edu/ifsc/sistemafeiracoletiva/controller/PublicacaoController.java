@@ -1,5 +1,6 @@
 package br.edu.ifsc.sistemafeiracoletiva.controller;
 
+import br.edu.ifsc.sistemafeiracoletiva.dto.PublicacaoDetalhesOutputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.dto.PublicacaoInputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.dto.PublicacaoOutputDTO;
 import br.edu.ifsc.sistemafeiracoletiva.service.PublicacaoService;
@@ -26,6 +27,7 @@ public class PublicacaoController {
 
     /**
      * Retorna todos os publicacoes cadastrados.
+     * Retorna o DTO sem os detalhes dos participantes.
      * @return lista de PublicacaoOutputDTO
      */
     @GetMapping
@@ -35,6 +37,7 @@ public class PublicacaoController {
 
     /**
      * Retorna as publicações de um vendedor específico.
+     * Retorna o DTO sem os detalhes dos participantes.
      * @param vendedorId O ID do vendedor.
      * @return lista de PublicacaoOutputDTO do vendedor.
      */
@@ -49,12 +52,25 @@ public class PublicacaoController {
 
     /**
      * Retorna um publicacao por ID.
+     * Retorna o DTO sem os detalhes dos participantes.
      * @param id identificador do publicacao
      * @return publicacao encontrado ou 404
      */
     @GetMapping("/{id}")
     public ResponseEntity<PublicacaoOutputDTO> buscarPorId(@PathVariable int id) {
         Optional<PublicacaoOutputDTO> publicacao = service.buscarPorId(id);
+        return publicacao.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * ✅ NOVO ENDPOINT: Retorna uma publicação por ID, incluindo a lista de participantes e seus pedidos.
+     * @param id identificador da publicação
+     * @return PublicacaoDetalhesOutputDTO encontrada ou 404
+     */
+    @GetMapping("/{id}/detalhes")
+    public ResponseEntity<PublicacaoDetalhesOutputDTO> buscarPublicacaoComParticipantes(@PathVariable int id) {
+        Optional<PublicacaoDetalhesOutputDTO> publicacao = service.buscarPorIdComParticipantes(id);
         return publicacao.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -73,7 +89,7 @@ public class PublicacaoController {
     }
 
     /**
-     * ✅ RE-ADICIONADO: Cadastra vários publicacoes de uma vez.
+     * Cadastra vários publicacoes de uma vez.
      * @param dtos lista de objetos a serem cadastrados
      * @return lista de publicacoes salvos
      */
@@ -84,7 +100,7 @@ public class PublicacaoController {
     }
 
     /**
-     * ✅ RE-ADICIONADO: Atualiza os dados de um publicacao existente.
+     * Atualiza os dados de um publicacao existente.
      * @param id identificador do publicacao
      * @param dto dados atualizados
      * @return publicacao atualizado ou 404
@@ -99,7 +115,7 @@ public class PublicacaoController {
     }
 
     /**
-     * ✅ RE-ADICIONADO: Remove um publicacao do sistema.
+     * Remove um publicacao do sistema.
      * @param id identificador do publicacao
      * @return status HTTP apropriado
      */
